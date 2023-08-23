@@ -1,1 +1,1 @@
-# emotion
+# before running fine-tuned_bert_kmeans.ipynb, run prototype2.ipynb. 
