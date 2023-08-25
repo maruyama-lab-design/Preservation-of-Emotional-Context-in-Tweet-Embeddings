@@ -1,3 +1,8 @@
+# Outputs:
+embeddings/pretrained_embeddings.tsv
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
