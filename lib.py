@@ -1,4 +1,15 @@
+
+import os
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import font_manager
+
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+
+
 
 # loading data
 df_wrime = pd.read_table('wrime-ver1.tsv')
@@ -15,22 +26,19 @@ emotion_names_jp = ['喜び', '悲しみ', '期待', '驚き', '怒り', '恐れ
 df_wrime['readers_emotion_intensities'] = df_wrime.apply(lambda x: [x['Avg. Readers_' + name] for name in emotion_names], axis=1)
 print(df_wrime['readers_emotion_intensities'])
 
+# Filtering out samples with low intensities of emotions. 
 # (If all readers' intensities max )
 is_target = df_wrime['readers_emotion_intensities'].map(lambda x: max(x) >= 2)
 df_wrime_target = df_wrime[is_target]
 
 
 
-import matplotlib.pyplot as plt
-import matplotlib
-from matplotlib import font_manager
+
 
 # Make a color map. 
 cmap_name = 'gist_rainbow'
 cmap = plt.get_cmap(cmap_name)
 
-
-import numpy as np
 
 
 def appy_dimensionality_reduction(df_wrime_features, clusters):
