@@ -31,7 +31,7 @@ print(df_wrime['readers_emotion_intensities'])
 is_target = df_wrime['readers_emotion_intensities'].map(lambda x: max(x) >= 2)
 df_wrime_target = df_wrime[is_target]
 
-
+df_wrime_target = df_wrime_target.reset_index(drop=True) # これは共通
 
 
 
@@ -81,8 +81,102 @@ def appy_dimensionality_reduction(df_wrime_features, clusters):
 
 
 
+def make_embeddings_by_bert(sentences, tokenizer, model, path_to_embeddings):
+    from transformers import TRANSFORMERS_CACHE
+    print(TRANSFORMERS_CACHE)
+    from torch.utils.data import DataLoader
+
+    def tokenize(text): # tokenizer function
+        return tokenizer(text, padding=True, truncation=True, max_length=512, return_tensors="pt")
+
+    batch_size = 64
+    dataloader = DataLoader(sentences, batch_size=batch_size, collate_fn=tokenize)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
+    # Obtain embeddings using batch processing.
+    embeddings = []
+    with torch.no_grad():
+        for batch in dataloader:
+            # move batch to GPU
+            batch = {k: v.to(device) for k, v in batch.items()}
+            outputs = model(**batch)
+            hidden_states = outputs.hidden_states
+            embeddings.append(hidden_states[-1][:, 0]) # CLS token in the last layer
+
+    embeddings = torch.cat(embeddings)
+    # in 30 sec.
+
+    # transform to dataframe object.
+    df_embeddings = pd.DataFrame(embeddings.tolist())
+    df_embeddings.info()
+    # Save.
+    df_embeddings.to_csv(path_to_embeddings, sep='\t', index=False, header=False)
+    return df_embeddings
 
 
+def make_embeddings_by_word2vec(sentences):
+    import MeCab
+
+    # MeCabのインスタンスを作成
+    mecab = MeCab.Tagger()
+
+    # 形態素解析して単語のリストを取得する関数
+    def tokenize(text):
+        node = mecab.parseToNode(text)
+        tokens = []
+        while node:
+            if node.surface:
+                tokens.append(node.surface)
+            node = node.next
+        return tokens
+
+    # def tokenize2(text):
+    #     mecab = MeCab.Tagger("-Owakati")  # 分かち書きのオプションを追加
+    #     node = mecab.parseToNode(text)
+    #     tokens = []
+    #     while node:
+    #         if node.surface:
+    #             features = node.feature.split(",")  # node.featureから情報を取得
+    #             base_form = features[-3] if len(features) > 7 else node.surface  # 基本形を取得
+    #             tokens.append(base_form)
+    #         node = node.next
+    #     return tokens
+
+    tokens1 = tokenize(sentences[1])
+    print(tokens1)
+
+    # tokens2 = tokenize2(sentences[1])
+    # print(tokens2)
+
+    vector_size = 768
+
+    from gensim.models import word2vec
+    # Word2Vecの入力を作成
+    data = [tokenize(sentence) for sentence in sentences] # tokenizeの方が良い
+
+    # A bar graph was generated here. 
+
+    # word2vecモデルの訓練
+    model = word2vec.Word2Vec(data, vector_size=vector_size, window=5, min_count=1, workers=16, epochs=1000, sample=1e-4, negative=5, sg=1) # sg=0(cbow), sg=1(skip-gram)
+    # 3min
+
+    # model.wv.most_similar('すごい', topn=5)
+    # number of words. 
+    len(model.wv.index_to_key) # tokenize:26633 tokenized2:24361
+
+    import numpy as np
+    embeddings = np.array([np.mean([model.wv[token] for token in sentence], axis=0) for sentence in data]) 
+    # The embedding of a tweet is formulated as the average of the embeddings of the word 
+    # included in the tweet. 
+
+    # To-Do: devise another ways. 
+
+    df_embeddings = pd.DataFrame(embeddings)
+    df_embeddings.info()
+    df_embeddings.to_csv('embeddings/word2vec_embeddings.tsv', sep='\t', index=False, header=False)
+    return df_embeddings
 
 
 
