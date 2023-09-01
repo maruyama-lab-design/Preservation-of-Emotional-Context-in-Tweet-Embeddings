@@ -70,8 +70,8 @@ def appy_dimensionality_reduction(df_wrime_features, clusters):
     for mapping in mappings:
         plt.figure(figsize=(8, 6))
         plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap_name, alpha=0.7)
-        plt.xlabel('dim 1')
-        plt.ylabel('dim 2')
+        plt.xlabel('Dim 1')
+        plt.ylabel('Dim 2')
         # plt.title(f'UMAP (k={k})')
         plt.colorbar()
         plt.show()
