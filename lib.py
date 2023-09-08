@@ -82,6 +82,7 @@ def appy_dimensionality_reduction(df_wrime_features, clusters):
 
 
 def make_embeddings_by_bert(sentences, tokenizer, model, path_to_embeddings):
+    import torch
     from transformers import TRANSFORMERS_CACHE
     print(TRANSFORMERS_CACHE)
     from torch.utils.data import DataLoader
