@@ -117,7 +117,7 @@ def make_embeddings_by_bert(sentences, tokenizer, model, path_to_embeddings):
     return df_embeddings
 
 
-def make_embeddings_by_word2vec(sentences):
+def make_embeddings_by_word2vec(sentences, path_to_embeddings):
     import MeCab
 
     # MeCabのインスタンスを作成
@@ -176,7 +176,7 @@ def make_embeddings_by_word2vec(sentences):
 
     df_embeddings = pd.DataFrame(embeddings)
     df_embeddings.info()
-    df_embeddings.to_csv('embeddings/word2vec_embeddings.tsv', sep='\t', index=False, header=False)
+    df_embeddings.to_csv(path_to_embeddings, sep='\t', index=False, header=False)
     return df_embeddings
 
 
