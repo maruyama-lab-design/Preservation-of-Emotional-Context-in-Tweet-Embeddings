@@ -34,14 +34,20 @@ df_wrime_target = df_wrime[is_target]
 df_wrime_target = df_wrime_target.reset_index(drop=True) # これは共通
 
 
+# Permutation of cluster IDs.
+map_of_permutation_for_cluster_IDs = {
+    "pretrained": [3, 6, 4, 5, 2, 1], 
+    "fine_tuned": [3, 5, 1, 6, 2, 4], 
+    "word2vec": [3, 4, 5, 1, 6, 2] 
+}
+
+
 
 # Make a color map. 
 cmap_name = 'gist_rainbow'
 cmap = plt.get_cmap(cmap_name)
 
-
-
-def appy_dimensionality_reduction(df_wrime_features, clusters):
+def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters):
     mappings = []
 
     from sklearn.decomposition import PCA
@@ -49,7 +55,8 @@ def appy_dimensionality_reduction(df_wrime_features, clusters):
     # PCA
     pca = PCA(n_components=2)
     pca.fit(df_wrime_features)
-    mappings.append(pca.transform(df_wrime_features)) 
+    df_wrime_features_pca = pca.transform(df_wrime_features)
+    mappings.append(df_wrime_features_pca) 
 
     from sklearn.manifold import TSNE
 
@@ -75,8 +82,18 @@ def appy_dimensionality_reduction(df_wrime_features, clusters):
         # plt.title(f'UMAP (k={k})')
         plt.colorbar()
         plt.show()
+
+        # plot of embeddings with intensity-based cluster labels.
+        plt.figure(figsize=(8, 6))
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap_name, alpha=0.7)
+        plt.xlabel('Dim 1')
+        plt.ylabel('Dim 2')
+        # plt.title(f't-SNE (k={len(set(emotion_clusters))})')
+        plt.colorbar()
+        plt.show()
+
         
-    return df_wrime_features_tsne, df_wrime_features_umap
+    return df_wrime_features_pca, df_wrime_features_tsne, df_wrime_features_umap
 # end of appy_dimensionality_reduction
 
 
