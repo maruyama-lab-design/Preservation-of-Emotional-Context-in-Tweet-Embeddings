@@ -36,9 +36,15 @@ df_wrime_target = df_wrime_target.reset_index(drop=True) # これは共通
 
 # Permutation of cluster IDs.
 map_of_permutation_for_cluster_IDs = {
+    "word2vec": [3, 4, 5, 1, 6, 2],
     "pretrained": [3, 6, 4, 5, 2, 1], 
-    "fine_tuned": [3, 5, 1, 6, 2, 4], 
-    "word2vec": [3, 4, 5, 1, 6, 2] 
+    "fine_tuned": [3, 5, 1, 6, 2, 4]
+}
+
+dic_of_x_axis_labels = {
+    "word2vec": 'Word2vec-based cluster ID',
+    "pretrained": 'Pretrained BERT-based cluster ID',
+    "fine_tuned": 'Fine-tuned BERT-based cluster ID'
 }
 
 
@@ -75,8 +81,8 @@ def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters)
     
 
     for mapping in mappings:
-        plt.figure(figsize=(8, 6))
-        plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap_name, alpha=0.7)
+        plt.figure(figsize=(16, 12))
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap_name, alpha=0.7, marker='.')
         plt.xlabel('Dim 1')
         plt.ylabel('Dim 2')
         # plt.title(f'UMAP (k={k})')
@@ -84,8 +90,8 @@ def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters)
         plt.show()
 
         # plot of embeddings with intensity-based cluster labels.
-        plt.figure(figsize=(8, 6))
-        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap_name, alpha=0.7)
+        plt.figure(figsize=(16, 12))
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap_name, alpha=0.7, marker='.')
         plt.xlabel('Dim 1')
         plt.ylabel('Dim 2')
         # plt.title(f't-SNE (k={len(set(emotion_clusters))})')
