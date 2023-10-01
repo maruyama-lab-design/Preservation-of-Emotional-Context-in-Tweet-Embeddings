@@ -9,7 +9,8 @@ from matplotlib import font_manager
 from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
 
-
+# the number of clusters.
+k = 6
 
 # loading data
 df_wrime = pd.read_table('wrime-ver1.tsv')
@@ -50,8 +51,7 @@ dic_of_x_axis_labels = {
 
 
 # Make a color map. 
-cmap_name = 'gist_rainbow'
-cmap = plt.get_cmap(cmap_name)
+cmap = plt.get_cmap('gist_rainbow', k) # k is the number of clusters.
 
 def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters):
     mappings = []
@@ -81,21 +81,21 @@ def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters)
     
 
     for mapping in mappings:
-        plt.figure(figsize=(16, 12))
-        plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap_name, alpha=0.7, marker='.')
+        plt.figure(figsize=(8, 6), dpi=300)
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap, alpha=0.7, marker='.', vmin=0.5, vmax=k+0.5)
         plt.xlabel('Dim 1')
         plt.ylabel('Dim 2')
         # plt.title(f'UMAP (k={k})')
-        plt.colorbar()
+        plt.colorbar(ticks=range(1, k+1)) # k is the number of clusters.
         plt.show()
 
         # plot of embeddings with intensity-based cluster labels.
-        plt.figure(figsize=(16, 12))
-        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap_name, alpha=0.7, marker='.')
+        plt.figure(figsize=(8, 6), dpi=300)
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap, alpha=0.7, marker='.', vmin=0.5, vmax=k+0.5)
         plt.xlabel('Dim 1')
         plt.ylabel('Dim 2')
         # plt.title(f't-SNE (k={len(set(emotion_clusters))})')
-        plt.colorbar()
+        plt.colorbar(ticks=range(1, k+1)) # k is the number of clusters.
         plt.show()
 
         
@@ -178,7 +178,7 @@ def make_embeddings_by_word2vec(sentences, path_to_embeddings):
 
     from gensim.models import word2vec
     # Word2Vecの入力を作成
-    data = [tokenize(sentence) for sentence in sentences] # tokenizeの方が良い
+    data = [tokenize(sentence) for sentence in sentences]
 
     # A bar graph was generated here. 
 
