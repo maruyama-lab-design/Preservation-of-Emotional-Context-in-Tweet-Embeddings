@@ -9,9 +9,6 @@ from matplotlib import font_manager
 from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
 
-# the number of clusters.
-k = 6
-
 # loading data
 df_wrime = pd.read_table('wrime-ver1.tsv')
 # df_wrime.info()
@@ -49,14 +46,12 @@ dic_of_x_axis_labels = {
 }
 
 
-
-# Make a color map. 
-cmap = plt.get_cmap('gist_rainbow', k) # k is the number of clusters.
-
-def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters):
+def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters, num_of_colors=6):
     mappings = []
 
     from sklearn.decomposition import PCA
+
+
 
     # PCA
     pca = PCA(n_components=2)
@@ -79,23 +74,22 @@ def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters)
     df_wrime_features_umap = umap_obj.fit_transform(df_wrime_features)
     mappings.append(df_wrime_features_umap)
     
+    cmap = plt.get_cmap('gist_rainbow', num_of_colors) 
 
     for mapping in mappings:
         plt.figure(figsize=(8, 6), dpi=300)
-        plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap, alpha=0.7, marker='.', vmin=0.5, vmax=k+0.5)
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=clusters, cmap=cmap, alpha=0.7, marker='.', s=1, vmin=0.5, vmax=num_of_colors+0.5)
         plt.xlabel('Dim 1')
         plt.ylabel('Dim 2')
-        # plt.title(f'UMAP (k={k})')
-        plt.colorbar(ticks=range(1, k+1)) # k is the number of clusters.
+        plt.colorbar(ticks=range(1, num_of_colors + 1)) 
         plt.show()
 
         # plot of embeddings with intensity-based cluster labels.
         plt.figure(figsize=(8, 6), dpi=300)
-        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap, alpha=0.7, marker='.', vmin=0.5, vmax=k+0.5)
+        plt.scatter(mapping[:, 0], mapping[:, 1], c=emotion_clusters, cmap=cmap, alpha=0.7, marker='.', s=1, vmin=0.5, vmax=num_of_colors+0.5)
         plt.xlabel('Dim 1')
         plt.ylabel('Dim 2')
-        # plt.title(f't-SNE (k={len(set(emotion_clusters))})')
-        plt.colorbar(ticks=range(1, k+1)) # k is the number of clusters.
+        plt.colorbar(ticks=range(1, num_of_colors + 1)) 
         plt.show()
 
         
