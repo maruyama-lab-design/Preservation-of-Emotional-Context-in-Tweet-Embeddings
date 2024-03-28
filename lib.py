@@ -41,7 +41,7 @@ map_of_permutation_for_cluster_IDs = {
 
 dic_of_x_axis_labels = {
     "word2vec": 'Word2vec-based cluster ID',
-    "pretrained": 'Pretrained BERT-based cluster ID',
+    "pretrained": 'Pre-trained BERT-based cluster ID',
     "fine_tuned": 'Fine-tuned BERT-based cluster ID'
 }
 
@@ -137,10 +137,8 @@ def make_embeddings_by_bert(sentences, tokenizer, model, path_to_embeddings):
 def make_embeddings_by_word2vec(sentences, path_to_embeddings):
     import MeCab
 
-    # MeCabのインスタンスを作成
     mecab = MeCab.Tagger()
 
-    # 形態素解析して単語のリストを取得する関数
     def tokenize(text):
         node = mecab.parseToNode(text)
         tokens = []
@@ -171,12 +169,9 @@ def make_embeddings_by_word2vec(sentences, path_to_embeddings):
     vector_size = 768
 
     from gensim.models import word2vec
-    # Word2Vecの入力を作成
+    # Make inputs to Word2Vec
     data = [tokenize(sentence) for sentence in sentences]
 
-    # A bar graph was generated here. 
-
-    # word2vecモデルの訓練
     model = word2vec.Word2Vec(data, vector_size=vector_size, window=5, min_count=1, workers=16, epochs=1000, sample=1e-4, negative=5, sg=1) # sg=0(cbow), sg=1(skip-gram)
     # 3min
 
