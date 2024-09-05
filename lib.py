@@ -24,7 +24,7 @@ emotion_names_jp = ['喜び', '悲しみ', '期待', '驚き', '怒り', '恐れ
 df_wrime['readers_emotion_intensities'] = df_wrime.apply(lambda x: [x['Avg. Readers_' + name] for name in emotion_names], axis=1)
 print(df_wrime['readers_emotion_intensities'])
 
-# Filtering out samples with low intensities of emotions. 
+# Filtering out samples only with low intensities of emotions. 
 # (If all readers' intensities max )
 is_target = df_wrime['readers_emotion_intensities'].map(lambda x: max(x) >= 2)
 df_wrime_target = df_wrime[is_target]
