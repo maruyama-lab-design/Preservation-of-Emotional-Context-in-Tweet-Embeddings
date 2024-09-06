@@ -30,6 +30,8 @@ is_target = df_wrime['readers_emotion_intensities'].map(lambda x: max(x) >= 2)
 df_wrime_target = df_wrime[is_target]
 
 df_wrime_target = df_wrime_target.reset_index(drop=True) # これは共通
+print('---')
+print(df_wrime_target.info())
 
 
 # Permutation of cluster IDs.
