@@ -38,7 +38,8 @@ print(df_wrime_target.info())
 map_of_permutation_for_cluster_IDs = {
     "word2vec": [3, 4, 5, 1, 6, 2],
     "pretrained": [3, 6, 4, 5, 2, 1], 
-    "fine_tuned": [3, 5, 1, 6, 2, 4]
+    # "fine_tuned": [3, 5, 1, 6, 2, 4]
+    "fine_tuned": [4, 3, 1, 2, 6, 5] # i-th position corresponds to a generated cluster ID. This is mapped to the element in the i-th position.
 }
 
 dic_of_x_axis_labels = {
