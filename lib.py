@@ -100,6 +100,52 @@ def appy_dimensionality_reduction(df_wrime_features, clusters, emotion_clusters,
 
 
 
+def make_embeddings_by_bert_2_fold_CV(sentences, tokenizer, models, path_to_embeddings):
+    import torch
+    from transformers import TRANSFORMERS_CACHE
+    print(TRANSFORMERS_CACHE)
+    from torch.utils.data import DataLoader
+
+    def tokenize(text): # tokenizer function
+        return tokenizer(text, padding=True, truncation=True, max_length=512, return_tensors="pt")
+
+    df_embeddings_list = []
+    for fold in range(2):
+        model = models[fold]
+        if fold == 0:
+            sentences = sentences[:len(sentences)//2]
+        else:
+            sentences = sentences[len(sentences)//2:]
+
+        batch_size = 64
+        dataloader = DataLoader(sentences, batch_size=batch_size, collate_fn=tokenize)
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model.to(device)
+
+        # Obtain embeddings using batch processing.
+        embeddings = []
+        with torch.no_grad():
+            for batch in dataloader:
+                # move batch to GPU
+                batch = {k: v.to(device) for k, v in batch.items()}
+                outputs = model(**batch)
+                hidden_states = outputs.hidden_states
+                embeddings.append(hidden_states[-1][:, 0]) # CLS token in the last layer
+
+        embeddings = torch.cat(embeddings)
+        # in 30 sec.
+
+        # transform to dataframe object.
+        df_embeddings = pd.DataFrame(embeddings.tolist())
+        df_embeddings.info()
+        df_embeddings_list.append(df_embeddings)
+
+    df_embeddings = pd.concat(df_embeddings_list, axis=0, ignore_index=True, sort=False)
+    # Save.
+    df_embeddings.to_csv(path_to_embeddings, sep='\t', index=False, header=False)
+    return df_embeddings
+
 def make_embeddings_by_bert(sentences, tokenizer, model, path_to_embeddings):
     import torch
     from transformers import TRANSFORMERS_CACHE
